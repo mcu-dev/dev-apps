@@ -8,4 +8,4 @@ FILE(GLOB app_sources src/*.c)
 target_sources(app PRIVATE
   ${app_sources}
   )
-add_subdirectory(src/resources/hardware)
+add_subdirectory(src/dev-utils)

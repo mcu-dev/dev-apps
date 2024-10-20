@@ -17,7 +17,7 @@
  *
  ******************************************************************************
  */
-#include "resources/hardware/i2c.h"
+#include "dev-utils/i2c.h"
 #include <stdio.h>
 #include <zephyr/device.h>
 #include <zephyr/devicetree.h>
