@@ -1,3 +1,0 @@
-[submodule "apps/lsm303/src/dev-utils"]
-	path = apps/lsm303/src/dev-utils
-	url = https://github.com/mcu-dev/dev-utils
