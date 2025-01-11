@@ -17,44 +17,80 @@
  *
  ******************************************************************************
  */
-#include "dev-utils/i2c.h"
 #include <stdio.h>
 #include <zephyr/device.h>
 #include <zephyr/devicetree.h>
 #include <zephyr/kernel.h>
 
-#define ACC_ADDR 0x19
-#define MAG_ADDR 0x1E
-#define ACC_REG_ID 0x20
-#define MAG_REG_ID 0x00
-#define ODR 0x07
-#define i2c0_master DT_NODELABEL(i2c0)
+#include "driver/lsm303.h"
 
-struct device *i2c0_dev;
+static lsm303_dev dev;
+static lsm303_init_param dev_param;
+static lsm303_axes_data lsm303_acc_data;
+uint8_t addr = 0x00;
+bool stat = true;
 
 int main(void) {
-  if (init_i2c0(&i2c0_dev)) {
+  dev_param.acc_power_mode = ACC_NORMAL;
+  dev_param.acc_odr = ACC_ODR_1HZ;
+  dev_param.acc_scale = ACC_SCALE_8G;
+  dev_param.acc_resolution = ACC_RESOLUTION_LOW;
+  dev_param.acc_axes_config.acc_axes = ACC_AXES_ENABLE_XYZ;
+
+  if (lsm303_setup(&dev, dev_param) == LSM303_STATUS_SUCCESS) {
     printk("Initialization successful!\r\n");
   } else {
-    printk("Initialization failed!\r\n");
+    return -1;
   }
-  uint8_t read_data;
-  int ret = i2c0_read_byte(&i2c0_dev, ACC_ADDR, ACC_REG_ID, &read_data);
-  printk("read_data: 0x%.2x\r\n", read_data);
-  printk("ret: %d\r\n", ret);
 
-  read_data = read_data | ODR << 4;
-  uint8_t data_buffer[] = {ACC_REG_ID, read_data};
+  if (lsm303_i2c_read(&dev, ACC_I2C_ADDRESS, CTRL_REG1_A, &addr) ==
+      LSM303_STATUS_SUCCESS) {
+    printk("CTRL_REG1_A: 0x%.2x\r\n", addr);
+  }
 
-  ret = i2c0_write_bytes(&i2c0_dev, ACC_ADDR, data_buffer);
+  if (lsm303_i2c_read(&dev, ACC_I2C_ADDRESS, CTRL_REG4_A, &addr) ==
+      LSM303_STATUS_SUCCESS) {
+    printk("CTRL_REG4_A: 0x%.2x\r\n", addr);
+  }
 
-  ret = i2c0_read_byte(&i2c0_dev, ACC_ADDR, ACC_REG_ID, &read_data);
-  printk("read_data: 0x%.2x\r\n", read_data);
-  printk("ret: %d\r\n", ret);
+  while (stat) {
+    if (lsm303_data_ready(&dev) == LSM303_STATUS_SUCCESS) {
+      if (dev.acc_axes_config.enable.x) {
+        if (dev.acc_axes_config.ready.x) {
+          if (lsm303_get_x_raw_data(&dev, &lsm303_acc_data) ==
+              LSM303_STATUS_SUCCESS) {
+            printk("raw X: %d\r\n", lsm303_acc_data.x);
+            printk("acc X: %.2f\r\n",
+                   (double)convert_raw_to_g(&dev, lsm303_acc_data.x));
+          }
+        }
+      }
 
-  ret = i2c0_read_byte(&i2c0_dev, MAG_ADDR, MAG_REG_ID, &read_data);
-  printk("read_data: 0x%.2x\r\n", read_data);
-  printk("ret: %d\r\n", ret);
+      if (dev.acc_axes_config.enable.y) {
+        if (dev.acc_axes_config.ready.y) {
+          if (lsm303_get_y_raw_data(&dev, &lsm303_acc_data) ==
+              LSM303_STATUS_SUCCESS) {
+            printk("Raw Y: %d\r\n", lsm303_acc_data.y);
+            printk("acc Y: %.2f\r\n",
+                  (double)convert_raw_to_g(&dev, lsm303_acc_data.y));
+          }
+        }
+      }
+
+      if (dev.acc_axes_config.enable.z) {
+        if (dev.acc_axes_config.ready.z) {
+          if (lsm303_get_z_raw_data(&dev, &lsm303_acc_data) ==
+              LSM303_STATUS_SUCCESS) {
+            printk("Raw Z: %d\r\n", lsm303_acc_data.z);
+            printk("acc Z: %.2f\r\n",
+                   (double)convert_raw_to_g(&dev, lsm303_acc_data.z));
+          }
+        }
+      }
+    }
+    printk(" \r\n");
+    k_msleep(500);
+  }
 
   return 0;
 }
