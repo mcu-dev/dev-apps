@@ -40,6 +40,7 @@ int main(void) {
   if (lsm303_setup(&dev, dev_param) == LSM303_STATUS_SUCCESS) {
     printk("Initialization successful!\r\n");
   } else {
+    printk("Initialization Failed, exiting app!\r\n");
     return -1;
   }
 
@@ -61,7 +62,7 @@ int main(void) {
               LSM303_STATUS_SUCCESS) {
             printk("raw X: %d\r\n", lsm303_acc_data.x);
             printk("acc X: %.2f\r\n",
-                   (double)convert_raw_to_g(&dev, lsm303_acc_data.x));
+                   (double)lsm303_convert_raw_to_g(&dev, lsm303_acc_data.x));
           }
         }
       }
@@ -72,7 +73,7 @@ int main(void) {
               LSM303_STATUS_SUCCESS) {
             printk("Raw Y: %d\r\n", lsm303_acc_data.y);
             printk("acc Y: %.2f\r\n",
-                  (double)convert_raw_to_g(&dev, lsm303_acc_data.y));
+                   (double)lsm303_convert_raw_to_g(&dev, lsm303_acc_data.y));
           }
         }
       }
@@ -83,7 +84,7 @@ int main(void) {
               LSM303_STATUS_SUCCESS) {
             printk("Raw Z: %d\r\n", lsm303_acc_data.z);
             printk("acc Z: %.2f\r\n",
-                   (double)convert_raw_to_g(&dev, lsm303_acc_data.z));
+                   (double)lsm303_convert_raw_to_g(&dev, lsm303_acc_data.z));
           }
         }
       }
