@@ -9,4 +9,5 @@ FILE(GLOB app_sources src/*.c)
 target_sources(app PRIVATE
   ${app_sources}
   )
-add_subdirectory(src/driver)
+add_subdirectory(src/driver/src)
+add_subdirectory(src/driver/src/utils)
