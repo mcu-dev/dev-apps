@@ -1,20 +1,7 @@
 {
-	"folders": [
-		{
-			"path": "."
-		}
-	],
-	"settings": {
-		"nrf-connect.applications": [
-			"${workspaceFolder}\\apps\\lsm303"
-		],
-		"files.associations": {
-			"devicetree.h": "c",
-			"lsm303.h": "c",
-			"stdio.h": "c",
-			"kernel.h": "c",
-			"device.h": "c",
-			"gpio.h": "c"
-		}
-	}
+    "folders": [
+        {
+            "path": "."
+        }
+    ]
 }
