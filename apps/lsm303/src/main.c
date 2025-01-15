@@ -22,7 +22,8 @@
 #include <zephyr/devicetree.h>
 #include <zephyr/kernel.h>
 
-#include "driver/lsm303.h"
+#include "driver/src/lsm303.h"
+#include "driver/src/utils/utils.h"
 
 static lsm303_dev dev;
 static lsm303_init_param dev_param;
@@ -38,20 +39,10 @@ int main(void) {
   dev_param.acc_axes_config.acc_axes = ACC_AXES_ENABLE_XYZ;
 
   if (lsm303_setup(&dev, dev_param) == LSM303_STATUS_SUCCESS) {
-    printk("Initialization successful!\r\n");
+    printf("Initialization successful!\r\n");
   } else {
-    printk("Initialization Failed, exiting app!\r\n");
+    printf("Initialization Failed, exiting app!\r\n");
     return -1;
-  }
-
-  if (lsm303_i2c_read(&dev, ACC_I2C_ADDRESS, CTRL_REG1_A, &addr) ==
-      LSM303_STATUS_SUCCESS) {
-    printk("CTRL_REG1_A: 0x%.2x\r\n", addr);
-  }
-
-  if (lsm303_i2c_read(&dev, ACC_I2C_ADDRESS, CTRL_REG4_A, &addr) ==
-      LSM303_STATUS_SUCCESS) {
-    printk("CTRL_REG4_A: 0x%.2x\r\n", addr);
   }
 
   while (stat) {
@@ -60,8 +51,8 @@ int main(void) {
         if (dev.acc_axes_config.ready.x) {
           if (lsm303_get_x_raw_data(&dev, &lsm303_acc_data) ==
               LSM303_STATUS_SUCCESS) {
-            printk("raw X: %d\r\n", lsm303_acc_data.x);
-            printk("acc X: %.2f\r\n",
+            printf("raw X: %d\r\n", lsm303_acc_data.x);
+            printf("acc X: %.2f\r\n",
                    (double)lsm303_convert_raw_to_g(&dev, lsm303_acc_data.x));
           }
         }
@@ -71,8 +62,8 @@ int main(void) {
         if (dev.acc_axes_config.ready.y) {
           if (lsm303_get_y_raw_data(&dev, &lsm303_acc_data) ==
               LSM303_STATUS_SUCCESS) {
-            printk("Raw Y: %d\r\n", lsm303_acc_data.y);
-            printk("acc Y: %.2f\r\n",
+            printf("Raw Y: %d\r\n", lsm303_acc_data.y);
+            printf("acc Y: %.2f\r\n",
                    (double)lsm303_convert_raw_to_g(&dev, lsm303_acc_data.y));
           }
         }
@@ -82,15 +73,15 @@ int main(void) {
         if (dev.acc_axes_config.ready.z) {
           if (lsm303_get_z_raw_data(&dev, &lsm303_acc_data) ==
               LSM303_STATUS_SUCCESS) {
-            printk("Raw Z: %d\r\n", lsm303_acc_data.z);
-            printk("acc Z: %.2f\r\n",
+            printf("Raw Z: %d\r\n", lsm303_acc_data.z);
+            printf("acc Z: %.2f\r\n",
                    (double)lsm303_convert_raw_to_g(&dev, lsm303_acc_data.z));
           }
         }
       }
     }
-    printk(" \r\n");
-    k_msleep(500);
+    printf(" \r\n");
+    delay_ms(500);
   }
 
   return 0;
