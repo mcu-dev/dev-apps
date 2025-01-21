@@ -3,5 +3,17 @@
         {
             "path": "."
         }
-    ]
+    ],
+    "settings": {
+        "nrf-connect.applications": [
+            "${workspaceFolder}\\apps\\adxl345"
+        ],
+        "files.associations": {
+            "adxl345.h": "c",
+            "stdio.h": "c",
+            "stdint.h": "c",
+            "i2c.h": "c",
+            "utils.h": "c"
+        }
+    }
 }
