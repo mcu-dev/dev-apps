@@ -4,3 +4,6 @@
 [submodule "apps/adxl345/src/driver"]
 	path = apps/adxl345/src/driver
 	url = https://github.com/mcu-dev/adxl345.git
+[submodule "apps/bmp180/src/driver"]
+	path = apps/bmp180/src/driver
+	url = https://github.com/mcu-dev/bmp180.git
